@@ -48,4 +48,23 @@ function crearTarea({tarea}){
     });
 }
 
-module.exports = {getTareas,crearTarea};
+function borrarTarea(id){
+    return new Promise(async (ok,ko) => {
+        let conexion = conectar();
+
+        try{
+            let {count} = await conexion`DELETE FROM tareas WHERE id = ${id}`;
+
+            conexion.end();
+
+            ok(count);
+
+        }catch(error){
+
+            ko({ error : "error en base de datos" });
+        }
+
+    });
+}
+
+module.exports = {getTareas,crearTarea,borrarTarea};
