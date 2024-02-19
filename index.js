@@ -25,10 +25,17 @@ servidor.post("/api-todo/crear", async (peticion,respuesta,siguiente) => {
     let {tarea} = peticion.body;
 
     if(tarea && tarea.trim() != ""){
-       return respuesta.send("método POST");
+        try{
+            let id = await crearTarea({tarea});
+            return respuesta.json({id});
+        }catch(error){
+            respuesta.status(500);
+            return respuesta.json(error);
+        }
+       
     }
 
-    siguiente("...no me enviaste tarea");
+    siguiente({ error : "falta el argumento tarea en el objeto JSON" });
     
 });
 
@@ -41,11 +48,13 @@ servidor.delete("/api-todo", (peticion,respuesta) => {
 });
 
 servidor.use((peticion,respuesta) => {
+    respuesta.status(404);
     respuesta.json({ error : "not found" });
 });
 
 servidor.use((error,peticion,respuesta,siguiente) => {
-    respuesta.send("..error");
+    respuesta.status(400);
+    respuesta.json({ error : "petición no válida" });
 });
 
 
